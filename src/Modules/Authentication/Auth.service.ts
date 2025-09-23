@@ -103,7 +103,7 @@ export class Authservices
    }
    else 
    {
-    const UpdateResult = await this.userRepory.updateDocument({Email:verfiyEmailDTO.Email},{$set:{IsVerifiyed:true},$unset:{OtpExpire:"",Otp:""}})
+    const UpdateResult = await this.userRepory.updateDocument({Email:verfiyEmailDTO.Email},{$set:{IsVerifiyed:true},$unset:{OtpExpire:"",Otp:"",ExpireAt:""}})
     if(!UpdateResult)
     {
       throw AppError.ServerError()

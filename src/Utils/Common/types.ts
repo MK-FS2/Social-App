@@ -1,6 +1,6 @@
-import mongoose, { ObjectId } from "mongoose"
 import { UserTypes } from "./enums"
-
+import { HydratedDocument } from "mongoose";
+import { IUser } from "./Interfaces";
 
 export type fileformat = 
 {
@@ -16,3 +16,8 @@ export type TPayload =
   Fullname: string;          
   UserType: UserTypes;       
 };
+
+export interface AuthResponse extends Response
+{
+User:HydratedDocument<IUser>
+}
