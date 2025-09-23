@@ -17,7 +17,3 @@ export type TPayload =
   UserType: UserTypes;       
 };
 
-export interface AuthResponse extends Response
-{
-User:HydratedDocument<IUser>
-}

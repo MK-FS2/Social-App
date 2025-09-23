@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import { userAgent, UserTypes } from "./enums";
 import { fileformat } from "./types";
 
@@ -38,4 +38,12 @@ export interface IToken {
   AccessToken: string;
   RefreshToken: string;
   TokenOwner: mongoose.Types.ObjectId;
+}
+
+
+export interface IPost 
+{
+CreatorID:ObjectId,
+Content:string,
+Attachments?:fileformat[]|null[]
 }
