@@ -19,7 +19,7 @@ export class AuthFactory
     User.Otp = nanoid(5)
     User.OtpExpire = new Date(Date.now() + 5 * 60 * 1000)
     User.lastModefication = new Date()
-    User.ProfilePicture = { public_id: "1", secure_url: "1" }
+    User.ProfilePicture = { ID: "1", URL: "1" }
     User.IsVerifiyed = false
     User.Password = bcrypt.hashSync(Data.Password, 10)
     return User

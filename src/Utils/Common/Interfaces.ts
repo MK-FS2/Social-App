@@ -1,5 +1,5 @@
 import mongoose, { ObjectId } from "mongoose";
-import { userAgent, UserTypes } from "./enums";
+import { Reactions, userAgent, UserTypes } from "./enums";
 import { fileformat } from "./types";
 
 export interface IUser {
@@ -34,16 +34,24 @@ export interface IFile {
 }
 
 
-export interface IToken {
+export interface IToken 
+{
   AccessToken: string;
   RefreshToken: string;
-  TokenOwner: mongoose.Types.ObjectId;
+  TokenOwner: mongoose.Types.ObjectId | string; 
 }
 
+export interface IReaction 
+{
+  UserID:mongoose.Types.ObjectId,
+  Reaction:Reactions
+}
 
 export interface IPost 
 {
-CreatorID:ObjectId,
+CreatorID:mongoose.Types.ObjectId,
+Header:string
 Content:string,
-Attachments?:fileformat[]|null[]
+PostReactions?:IReaction[]
+Attachments?:fileformat[]
 }

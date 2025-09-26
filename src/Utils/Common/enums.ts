@@ -2,13 +2,21 @@
 
 export enum userAgent 
 {
-    Normal="Normal",
-    Fromgoogle="Fromgoogle"
+    Normal,
+    Fromgoogle
 }
 
 
 export enum UserTypes 
 {
-    User="User",
-    Admin="Admin"
+    User,
+    Admin
+}
+export enum Reactions 
+{
+Like,
+Love,
+Wow,
+Sad,
+Angry
 }

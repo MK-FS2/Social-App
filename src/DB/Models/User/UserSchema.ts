@@ -6,6 +6,8 @@ import { SendMail } from "../../../Utils/mail";
 import { nanoid } from "nanoid";
 import CryptoJS from "crypto-js";
 import { AppError } from "../../../Utils/Error";
+import { number } from "zod";
+import FileSchema from "../Common/File/File.Schema";
 
 
 export type UserDocument = HydratedDocument<IUser>;
@@ -46,7 +48,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
   },
   UserAgent:
   {
-    type: String,
+    type:Number,
     required: true,
     enum: userAgent
   },
@@ -75,10 +77,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
   },
   ProfilePicture:
   {
-    type: {
-      public_id: { type: String },
-      secure_url: { type: String }
-    },
+    type:FileSchema,
     required: true
   },
   IsVerifiyed:
@@ -110,7 +109,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
   },
   UserType:
   {
-    type: String,
+    type:Number,
     enum: UserTypes,
     required: true,
     default: UserTypes.User

@@ -52,6 +52,8 @@ export class Authservices
 
     // Upload profile picture to cloud storage
     const Uploadedpicture = await UploadOne(file.path,`social/users/${createduser._id}/photos/profilepicture`)
+    // temp
+    console.log(Uploadedpicture)
     if(!Uploadedpicture)
     {
       await this.userRepory.deleteDocument({_id:createduser._id})
@@ -60,11 +62,11 @@ export class Authservices
     else 
     {
       // Update user with profile picture details
-      let updateresult = await this.userRepory.updateDocument({_id:createduser._id},{$set:{ProfilePicture:{public_id:Uploadedpicture.public_id,secure_url:Uploadedpicture.secure_url}}}
+      let updateresult = await this.userRepory.updateDocument({_id:createduser._id},{$set:{ProfilePicture:{ID:Uploadedpicture.ID,URL:Uploadedpicture.URL}}}
       )
       if(!updateresult)
       {
-        await DeleteOne(Uploadedpicture.public_id)
+        await DeleteOne(Uploadedpicture.ID)
         await this.userRepory.deleteDocument({_id:createduser._id})
         throw new AppError("server Error up-pho",500)
       }

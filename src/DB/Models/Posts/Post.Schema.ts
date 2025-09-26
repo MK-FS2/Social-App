@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { IPost } from "../../../Utils/Common/Interfaces";
+import ReactionSchema from "../Common/Reaction/Reaction.Schema";
+import FileSchema from "../Common/File/File.Schema";
 
 const PostSchema = new mongoose.Schema<IPost>(
   {
@@ -16,12 +18,9 @@ const PostSchema = new mongoose.Schema<IPost>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    Attachments: [
-      {
-        public_id: { type: String, required: true },
-        secure_url: { type: String, required: true },
-      },
-    ],
+    Header:{type:String,required:true},
+    Attachments:[FileSchema],
+    PostReactions:[ReactionSchema]
   },
   { timestamps: true,toJSON:{virtuals:true},toObject:{virtuals:true}}
 );

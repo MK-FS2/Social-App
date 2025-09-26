@@ -1,4 +1,3 @@
-import { Model } from "mongoose";
 import { IPost } from "../../../Utils/Common/Interfaces";
 import { Abstractrepo } from "../../AbstractRepo";
 import PostModel from "./Post.Model";
