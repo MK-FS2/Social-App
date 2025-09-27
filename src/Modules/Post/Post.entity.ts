@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import { fileformat } from '../../Utils/Common/types';
 
 
@@ -9,3 +9,5 @@ export class CreatePostEntity
  Attachments?:fileformat[]
  Header!:string
 }
+
+

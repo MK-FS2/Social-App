@@ -1,19 +1,20 @@
-import { NextFunction, Request, Response } from 'express';
+import { PostRepo } from './../../DB/Models/Posts/Post.Repo';
+import {  Request, Response } from 'express';
 import { CreatePostDTO } from './Post.DTO';
-import { PostRepo } from '../../DB/Models/Posts/Post.Repo';
-import { CreatePostFactory } from './Post.factory';
+import { PostFactory } from './Post.factory';
 import { UploadMany } from '../../Utils/cloud/CloudServcies';
 import { IFile } from '../../Utils/Common/Interfaces';
 import { fileformat } from '../../Utils/Common/types';
 import { AppError } from '../../Utils/Error';
 
 
-
 class PostServices 
 {
 constructor(){}
 private readonly postRepo = new PostRepo()
-private readonly createPostFactory = new CreatePostFactory()
+private readonly PostFactory  = new PostFactory()
+
+
 async CreatePost(req:Request,res:Response)
 {
     const files = req.files as Express.Multer.File[];
@@ -33,12 +34,18 @@ async CreatePost(req:Request,res:Response)
         throw new  AppError ("Error uploading photos",500)
      }
     }
-    const PostObject = this.createPostFactory.CreatePost(creatPostDTO,User._id,UplodResult)
+    const PostObject = this.PostFactory.CreatePost(creatPostDTO,User._id,UplodResult)
     const CreateResult = await this.postRepo.createDocument(PostObject)
+    if(!CreateResult)
+    {
+        throw  AppError.ServerError()
+    }
     res.sendStatus(204)
 }
 
+
+
 }
 
 
-export default PostServices
+export default PostServices 

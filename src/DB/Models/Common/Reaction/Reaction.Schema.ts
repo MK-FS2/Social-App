@@ -6,7 +6,7 @@ import { Reactions } from "../../../../Utils/Common/enums";
 const ReactionSchema = new mongoose.Schema<IReaction>({
 UserID:
 {
-type:mongoose.Types.ObjectId,
+type:mongoose.Schema.Types.ObjectId,
 required:true,
 Reaction:
 {

@@ -1,11 +1,11 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { CreatePostDTO } from "./Post.DTO";
-import { CreatePostEntity } from "./Post.entity";
+import {CreatePostEntity} from "./Post.entity";
 import { fileformat } from "../../Utils/Common/types";
 
 
 
-export  class CreatePostFactory 
+export  class PostFactory 
 {
    CreatePost(Data:CreatePostDTO,CreatorID:mongoose.Types.ObjectId,Attachments:fileformat[])
    {
@@ -16,4 +16,6 @@ export  class CreatePostFactory
     post.Header = Data.Header
     return post
    }
+
+
 }
