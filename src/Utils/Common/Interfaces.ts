@@ -52,7 +52,7 @@ export interface IPost
 CreatorID:mongoose.Types.ObjectId,
 Header:string
 Content:string,
-PostReactions?:IReaction[]
+Reactions?:IReaction[]
 Attachments?:fileformat[]
 }
 
@@ -71,5 +71,5 @@ export interface IComment
   UserID: mongoose.Types.ObjectId;           
   CommentContent: string;         
   Replays?:IReply[];               
-  CommnetReaction?: IReaction[];   
+ Reactions?: IReaction[];   
 }

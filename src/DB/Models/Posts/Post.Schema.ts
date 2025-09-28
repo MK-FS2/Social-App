@@ -20,7 +20,7 @@ const PostSchema = new mongoose.Schema<IPost>(
     },
     Header:{type:String,required:true},
     Attachments:[FileSchema],
-    PostReactions:[ReactionSchema]
+    Reactions:[ReactionSchema]
   },
   { timestamps: true,toJSON:{virtuals:true},toObject:{virtuals:true}}
 );

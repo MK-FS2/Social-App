@@ -6,6 +6,8 @@ import { UploadMany } from '../../Utils/cloud/CloudServcies';
 import { IFile } from '../../Utils/Common/Interfaces';
 import { fileformat } from '../../Utils/Common/types';
 import { AppError } from '../../Utils/Error';
+import { Reactions } from '../../Utils/Common/enums';
+import { ToggleReaction } from '../../Providers/Reactions/Reaction.provider';
 
 
 class PostServices 
@@ -43,7 +45,19 @@ async CreatePost(req:Request,res:Response)
     res.sendStatus(204)
 }
 
-
+async ToggleReactionp(req:Request,res:Response)
+{
+    const User = req.User
+    const {PostID} = req.params
+    const {Reaction} = req.body 
+    const PostExist = await this.postRepo.FindOneDocument({_id:PostID})
+    if(!PostExist)
+    {
+        throw AppError.NotFound("No post found")
+    }
+    const Result = await ToggleReaction({UserID: User._id,ItemID: PostExist._id,TheReaction:Reaction,Repo: this.postRepo,});
+   return res.status(200).json({message: `Reaction ${Result} successfully`,status:"Succsess",});
+}
 
 }
 

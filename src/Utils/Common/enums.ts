@@ -14,9 +14,15 @@ export enum UserTypes
 }
 export enum Reactions 
 {
-Like,
-Love,
-Wow,
-Sad,
-Angry
+Like=1,
+Love=2,
+Wow=3,
+Sad=4,
+Angry=5
+}
+
+export enum ReactioningCodes {
+  Add = "Added",
+  Change = "Updated",
+  Delete = "Deleted"
 }

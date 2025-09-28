@@ -5,6 +5,7 @@ import { CommentFactory } from "./Comment.factory"
 import { PostRepo } from '../../DB/Models/Posts/Post.Repo';
 import { AppError } from '../../Utils/Error';
 import mongoose from 'mongoose';
+import { ToggleReaction } from '../../Providers/Reactions/Reaction.provider';
 
 class commentServicesices 
 {
@@ -35,6 +36,26 @@ async CreateComment(req:Request,res:Response)
     throw  AppError.ServerError()
    }
    res.sendStatus(204)
+}
+
+async ToggleReactionc(req:Request,res:Response)
+{
+    const User = req.User
+    const {PostID,commentID} = req.params
+    const {Reaction} = req.body 
+    const PostExist = await this.postRepo.FindOneDocument({_id:PostID})
+    if(!PostExist)
+    {
+        throw AppError.NotFound("No post found")
+    }
+    const commentExist = await this.commentRepo.FindOneDocument({_id:commentID})
+    if(!commentExist)
+    {
+         throw AppError.NotFound(" No comment found")
+    }
+
+    const Result = await ToggleReaction({UserID: User._id,ItemID: commentExist._id,TheReaction:Reaction,Repo: this.commentRepo,});
+   return res.status(200).json({message: `Reaction ${Result} successfully`,status:"Succsess",});
 }
 }
 

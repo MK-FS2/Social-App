@@ -28,7 +28,7 @@ Replays:
 type:[ReplySchema],
 required:false
 },
-CommnetReaction:[ReactionSchema]
+Reactions:[ReactionSchema]
 },{timestamps:true})
 
 
