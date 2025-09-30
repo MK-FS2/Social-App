@@ -17,13 +17,16 @@ export class TokenRepo extends Abstractrepo<IToken> {
     } catch { return false; }
   }
 
-  async CheckDeprecatedAccesToken(Token: string, TokenOwner: string | Types.ObjectId): Promise<boolean> {
-    try { return !!(await this.IsExist({ AccessToken: Token, TokenOwner })); }
-    catch { throw AppError.ServerError(); }
-  }
+ async CheckDeprecatedAccessToken(token: string, tokenOwner: string | Types.ObjectId): Promise<boolean> 
+ {
+  const result = await this.IsExist({ AccessToken: token, TokenOwner: tokenOwner });
+  if (result){ return true; } 
+  else { return false; }
+}
 
   async CheckDeprecatedRefreshToken(Token: string, TokenOwner: string | Types.ObjectId): Promise<boolean> {
     try { return !!(await this.IsExist({ RefreshToken: Token, TokenOwner })); }
     catch { throw AppError.ServerError(); }
   }
+
 }

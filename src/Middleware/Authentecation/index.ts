@@ -26,9 +26,9 @@ async function Authenticate(req: Request, res: Response, next: NextFunction) {
       throw AppError.NotFound("User not found");
     }
 
-    const isDeprecated = await tokenRepo.CheckDeprecatedAccesToken(Raw_Token as string, Token.id);
+    const isDeprecated = await tokenRepo.CheckDeprecatedAccessToken(Raw_Token as string, Token.id);
     if (isDeprecated) {
-      throw new AppError("Deprecated token, login again", 401);
+      throw new AppError("Deprecated token A, login again", 401);
     }
 
     // Compare lastModification date with token iat
@@ -42,7 +42,7 @@ async function Authenticate(req: Request, res: Response, next: NextFunction) {
       const refreshDeprecated = await tokenRepo.CheckDeprecatedRefreshToken(refreshToken, Token.id );
 
       if (refreshDeprecated) {
-        throw new AppError("Deprecated refresh token, login again", 401);
+        throw new AppError("Deprecated refresh token R, login again", 401);
       }
 
       const verifiedRefreshToken = VerifyToken(refreshToken);

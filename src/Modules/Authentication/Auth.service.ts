@@ -8,6 +8,7 @@ import { DeleteOne, UploadOne } from '../../Utils/cloud/CloudServcies';
 import { SendMail } from '../../Utils/mail';
 import { nanoid } from 'nanoid';
 import { SignToken } from '../../Utils/Token';
+import { TokenRepo } from '../../DB/Models/Tokens/TokenRepo';
 
 
 
@@ -17,9 +18,10 @@ export class Authservices
   constructor(){}   
 
   // Initialize Repositories and Factories
-  private userRepory = new UserRepo()
-  private authFactory = new AuthFactory()
-
+  private readonly userRepory = new UserRepo()
+  private readonly authFactory = new AuthFactory()
+  private readonly tokenRepo = new TokenRepo()
+  
   // Create User Account
   async CreateUserAccount(req:Request,res:Response,next:NextFunction)
   {
@@ -216,7 +218,7 @@ async ResetNewPassword(req:Request,res:Response,next:NextFunction)
   const isMatch = await bcrypt.compare(loginDTO.Password,user.Password)
   if(!isMatch) { throw new AppError("Invalid email or password",401) }
 
-  const accessToken = SignToken({id: user._id.toString(),Email: user.Email,Fullname: user.Fullname,UserType: user.UserType},"15m")
+  const accessToken = SignToken({id: user._id.toString(),Email: user.Email,Fullname: user.Fullname,UserType: user.UserType})
   if(!accessToken) { throw AppError.ServerError() }
 
   const refreshToken = SignToken({id: user._id.toString(),Email: user.Email,Fullname: user.Fullname,UserType: user.UserType},"7d")
@@ -224,6 +226,50 @@ async ResetNewPassword(req:Request,res:Response,next:NextFunction)
 
   return res.status(200).json({message:"Login successful",status:"success",accessToken,refreshToken})
 }
+
+
+
+ async Logout(req: Request, res: Response) 
+ {
+    const { authorization } = req.headers;
+    const refreshToken = req.headers["refresh-token"] as string;
+    const user = req.User 
+
+    if (!authorization || !authorization.startsWith("Bearer ")) {
+      throw AppError.InvalidInput("Authorization header must start with 'Bearer <token>'");
+    }
+    if (!refreshToken) {
+      throw AppError.InvalidInput("Refresh token header missing");
+    }
+
+    const rawToken = authorization.split(" ")[1];
+   const result = await this.tokenRepo.BlackListToken(rawToken!, refreshToken, user._id);
+   if(!result)
+   {
+    throw AppError.ServerError()
+   }
+    return res.status(200).json({ message: "Logged out successfully" });
+  }
+
+  async Refresh(req: Request, res: Response) 
+  {
+  const { authorization } = req.headers;
+  const refreshToken = req.headers["refresh-token"] as string;
+  const rawAccessToken = authorization!.split(" ")[1];
+  const user = req.User; 
+
+  const accessToken = SignToken({ id: user._id.toString(), Email: user.Email, Fullname: user.Fullname, UserType: user.UserType });
+
+  const newRefreshToken = SignToken({ id: user._id.toString(), Email: user.Email, Fullname: user.Fullname, UserType: user.UserType },"7d"
+  );
+
+  await this.tokenRepo.BlackListToken(rawAccessToken!, refreshToken, user._id);
+
+  return res.status(200).json({message: "Login successful",status: "success", accessToken,refreshToken: newRefreshToken});
 }
+  
+}
+
+
   
 
