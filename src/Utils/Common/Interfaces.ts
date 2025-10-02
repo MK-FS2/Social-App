@@ -47,6 +47,7 @@ export interface IReaction
   Reaction:Reactions
 }
 
+
 export interface IPost 
 {
 CreatorID:mongoose.Types.ObjectId,

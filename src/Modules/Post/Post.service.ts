@@ -59,7 +59,29 @@ async ToggleReactionp(req:Request,res:Response)
    return res.status(200).json({message: `Reaction ${Result} successfully`,status:"Succsess",});
 }
 
+async GetPosts(req: Request, res: Response) {
+  const User = req.User;
+  const { page, limit } = req.query;
+
+  if (!page || !limit) 
+ {
+    throw AppError.Unauthorized("Invalid input");
+  }
+
+  const pageNum = Number(page);
+  const limitNum = Number(limit);
+
+  if (isNaN(pageNum) || isNaN(limitNum))
+  {
+    throw AppError.Unauthorized("Invalid input");
+  }
+  const posts = await this.postRepo.GetPost(User._id, limitNum, pageNum);
+  if (!posts) 
+    {
+    throw AppError.NotFound("No post found");
+  }
+  res.status(200).json({data: posts,status: "success",});
 }
 
-
+}
 export default PostServices 

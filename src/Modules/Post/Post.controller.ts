@@ -14,5 +14,6 @@ PostRout.use("/comment",CommentRoute)
 PostRout.post("/CreatePost",Authenticate,FileUpload(3*1024*1024,FileTypes.Image).array('Attachments',3),SchemaValidator(CreatePostValidation),ErrorCatcher(postServices.CreatePost.bind(postServices)))
 // send 0 to delete 
 PostRout.post("/ToggleReaction/:PostID",Authenticate,ErrorCatcher(postServices.ToggleReactionp.bind(postServices)))
+PostRout.get("/GetPosts",Authenticate,ErrorCatcher(postServices.GetPosts.bind(postServices)))
 
 export default PostRout

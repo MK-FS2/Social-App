@@ -11,7 +11,7 @@ function FindUserIndex(UserID: mongoose.Types.ObjectId, ReactionsArray: IReactio
 }
 
 
-async function AddComment(ItemID:mongoose.Types.ObjectId,TheReaction:Reactions,UserId:mongoose.Types.ObjectId,Repo:PostRepo | CommentRepo):Promise<boolean>
+async function AddReaction(ItemID:mongoose.Types.ObjectId,TheReaction:Reactions,UserId:mongoose.Types.ObjectId,Repo:PostRepo | CommentRepo):Promise<boolean>
 {
    console.log("TheReaction being saved:", TheReaction, typeof TheReaction);
   const AddingResult = await Repo.updateDocument(
@@ -71,7 +71,7 @@ export async function ToggleReaction(params: {UserID: mongoose.Types.ObjectId;It
    {
       throw new AppError("The reaction is requried",400)
    }
-   const AddingResult = await AddComment(params.ItemID,params.TheReaction,params.UserID,params.Repo)
+   const AddingResult = await AddReaction(params.ItemID,params.TheReaction,params.UserID,params.Repo)
    if(!AddingResult)
    {
       throw new AppError("Error adding reaction",500)
