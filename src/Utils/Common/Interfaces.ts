@@ -57,20 +57,12 @@ Reactions?:IReaction[]
 Attachments?:fileformat[]
 }
 
-export interface IReply 
-{
-  CommentID: mongoose.Types.ObjectId;     
-  UserID: mongoose.Types.ObjectId;        
-  ReplyContent: string;           
-  directedTo: mongoose.Types.ObjectId;        
-  CommnetReaction?:IReaction[];         
-}
 
 export interface IComment 
 {
   PostID: mongoose.Types.ObjectId;           
   UserID: mongoose.Types.ObjectId;           
-  CommentContent: string;         
-  Replays?:IReply[];               
- Reactions?: IReaction[];   
+  CommentContent: string;     
+  ParentID?: mongoose.Types.ObjectId                 
+  Reactions?: IReaction[];   
 }

@@ -10,4 +10,5 @@ const CommentRoute = Router({mergeParams: true })
 const commentServices = new commentServicesices()
 CommentRoute.post("/AddComment/:PostID",Authenticate,SchemaValidator(createCommentValidation),ErrorCatcher(commentServices.CreateComment.bind(commentServices)))
 CommentRoute.post("/ToggleReactioncomment/:PostID/:commentID",Authenticate,ErrorCatcher(commentServices.ToggleReactionc.bind(commentServices)))
+CommentRoute.post("/ReplyTocomment/:PostID/:CommentID",Authenticate,SchemaValidator(createCommentValidation),ErrorCatcher(commentServices.ReplyComment.bind(commentServices)))
 export default CommentRoute

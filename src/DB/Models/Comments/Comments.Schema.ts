@@ -23,10 +23,11 @@ CommentContent:
  type:String,
  required:true
 },
-Replays:
+ParentID:
 {
-type:[ReplySchema],
-required:false
+type:mongoose.Schema.Types.ObjectId,
+required:false,
+ref:"Comment"
 },
 Reactions:[ReactionSchema]
 },{timestamps:true})

@@ -57,6 +57,38 @@ async ToggleReactionc(req:Request,res:Response)
     const Result = await ToggleReaction({UserID: User._id,ItemID: commentExist._id,TheReaction:Reaction,Repo: this.commentRepo,});
    return res.status(200).json({message: `Reaction ${Result} successfully`,status:"Succsess",});
 }
+
+
+async ReplyComment(req:Request,res:Response)
+{
+    let {PostID,CommentID} = req.params
+    let User = req.User
+    let Data:CreateCommentDTO = req.body
+
+     
+    const PostExist = await this.postRepo.IsExist({_id:PostID})
+    if(!PostExist)
+    {
+     throw AppError.NotFound("No post Found")
+    }
+    console.log(CommentID)
+    const commentExist = await this.commentRepo.IsExist({_id:CommentID})
+    if(!commentExist)
+    {
+        throw  AppError.NotFound("No comment Found")
+    }
+
+    const Reply = this.commentFactory.createReply(Data,PostID as unknown as mongoose.Types.ObjectId,User._id,CommentID as unknown as mongoose.Types.ObjectId)
+
+    const CraetionOtcome = await this.commentRepo.createDocument(Reply)
+    if(!CraetionOtcome)
+    {
+        throw  AppError.ServerError()
+    }
+
+    res.sendStatus(204)
+}
+
 }
 
 export default commentServicesices 
