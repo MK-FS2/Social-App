@@ -8,6 +8,7 @@ import { fileformat } from '../../Utils/Common/types';
 import { AppError } from '../../Utils/Error';
 import { Reactions } from '../../Utils/Common/enums';
 import { ToggleReaction } from '../../Providers/Reactions/Reaction.provider';
+import mongoose from 'mongoose';
 
 
 class PostServices 
@@ -80,8 +81,24 @@ async GetPosts(req: Request, res: Response) {
     {
     throw AppError.NotFound("No post found");
   }
-  res.status(200).json({data: posts,status: "success",});
+  res.status(200).json({Data: posts,status: "success",});
 }
+
+
+ async GetSpecificPost(req: Request, res: Response)
+ {
+  const {PostID} = req.params
+  let User = req.User
+  const Post = await this.postRepo.GetSpecificPost(User._id,PostID as unknown as mongoose.Types.ObjectId)
+
+   if(!Post)
+   {
+    throw AppError.NotFound("No post found")
+   }
+
+   res.json({Data:Post ,status: "success"})
+ }
+
 
 }
 export default PostServices 

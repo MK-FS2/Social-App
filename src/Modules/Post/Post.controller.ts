@@ -15,5 +15,5 @@ PostRout.post("/CreatePost",Authenticate,FileUpload(3*1024*1024,FileTypes.Image)
 // send 0 to delete 
 PostRout.post("/ToggleReaction/:PostID",Authenticate,ErrorCatcher(postServices.ToggleReactionp.bind(postServices)))
 PostRout.get("/GetPosts",Authenticate,ErrorCatcher(postServices.GetPosts.bind(postServices)))
-
+PostRout.get("/GetSpecificPost/:PostID",Authenticate,ErrorCatcher(postServices.GetSpecificPost.bind(postServices)))
 export default PostRout
