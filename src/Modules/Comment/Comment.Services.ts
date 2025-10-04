@@ -89,6 +89,30 @@ async ReplyComment(req:Request,res:Response)
     res.sendStatus(204)
 }
 
+async GetPostComments(req:Request,res:Response)
+{
+    let {PostId,limit} = req.params
+    const User = req.User
+
+    const Comments = await this.commentRepo.GetComments(User._id,PostId as unknown as mongoose.Types.ObjectId,limit as unknown as number)
+    if(Comments.length == 0)
+    {
+        res.json({Data:[]})
+    }
+    else 
+    {
+     res.json({Data:Comments})
+    }
+}
+ 
+async GetReplies(req:Request,res:Response)
+{
+const {CommentID} = req.params
+const User = req.User
+const Replies = await this.commentRepo
+}
+
+
 }
 
 export default commentServicesices 

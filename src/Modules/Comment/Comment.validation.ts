@@ -1,11 +1,13 @@
 import { z ,ZodType } from "zod";
-import { CreateCommentDTO } from "./Comment.DTO";
-import mongoose from "mongoose";
-import { Reactions } from "../../Utils/Common/enums";
+import { CreateCommentDTO, GetCommentDTO } from "./Comment.DTO";
 
-
+const ObjectIDRej=/^[0-9a-fA-F]{24}$/
 export const createCommentValidation:ZodType<CreateCommentDTO> = z.object({
 CommentContent:z.string().min(3,"minimum 3 characters").max(200,"maximum of 200 characters"),
-PostID:z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId")
+PostID:z.string().regex(ObjectIDRej, "Invalid ObjectId")
 })
 
+export const GetComments = z.object({
+  PostId: z.string().regex(ObjectIDRej, "Invalid PostId"),
+  limit: z.string().regex(/^\d+$/, "Limit must be a number").transform(Number).refine((val) => val >= 5 && val <= 20, {message: "Limit must be between 5 and 20",}),
+});
