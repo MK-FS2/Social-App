@@ -2,6 +2,7 @@ import mongoose, { HydratedDocument } from "mongoose";
 import { IPost } from "../../../Utils/Common/Interfaces";
 import ReactionSchema from "../Common/Reaction/Reaction.Schema";
 import FileSchema from "../Common/File/File.Schema";
+import CommentModel from "../Comments/comments.Model";
 
 const PostSchema = new mongoose.Schema<IPost>(
   {
@@ -78,5 +79,13 @@ PostSchema.post("findOne", function (doc: HydratedDocument<IPost>, next) {
   }
   next();
 });
+
+
+PostSchema.pre("deleteOne",async function(next)
+{
+  const PostID = this.getFilter()
+  console.log(PostID)
+ await CommentModel.deleteMany({PostID:PostID._id})
+})
 
 export default PostSchema;

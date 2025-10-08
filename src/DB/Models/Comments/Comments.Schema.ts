@@ -1,6 +1,7 @@
 import mongoose, { HydratedDocument } from "mongoose";
 import ReactionSchema from "../Common/Reaction/Reaction.Schema";
 import { IComment } from "../../../Utils/Common/Interfaces";
+import CommentModel from "./comments.Model";
 
 
 
@@ -94,6 +95,32 @@ CommentSchema.virtual("Replies",
   ref: "Comment",
   localField: "_id",
   foreignField: "ParentID"
+});
+
+CommentSchema.virtual("DirectedTo",{
+ref:"User",
+localField:"UserID",
+foreignField:"_id"
+})
+
+CommentSchema.pre("deleteOne", { document: true, query: false }, async function (next) {
+  const commentId = this._id;
+  const replies = await CommentModel.find({ ParentID: commentId });
+  for (const reply of replies) 
+  {
+    await reply.deleteOne();
+  }
+  next();
+});
+
+ CommentSchema.pre("deleteMany", { query: true, document: false }, async function (next) {
+  const filter = this.getFilter();
+  const comments = await CommentModel.find(filter, { _id: 1 });
+  for (const c of comments) 
+  {
+    await c.deleteOne(); 
+  }
+  next();
 });
 
 export default CommentSchema

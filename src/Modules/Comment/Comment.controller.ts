@@ -3,7 +3,7 @@ import { Authenticate } from "../../Middleware/Authentecation"
 import { SchemaValidator } from "../../Middleware/SchemaValidator"
 import { ErrorCatcher } from "../../Middleware/ErrorCacher"
 import commentServicesices from "./Comment.Services"
-import { createCommentValidation, GetComments } from "./Comment.validation"
+import { createCommentValidation, DeleteComment, GetComments } from "./Comment.validation"
 
 
 const CommentRoute = Router({mergeParams: true })
@@ -12,4 +12,5 @@ CommentRoute.post("/AddComment/:PostID",Authenticate,SchemaValidator(createComme
 CommentRoute.post("/ToggleReactioncomment/:PostID/:commentID",Authenticate,ErrorCatcher(commentServices.ToggleReactionc.bind(commentServices)))
 CommentRoute.post("/ReplyTocomment/:PostID/:CommentID",Authenticate,SchemaValidator(createCommentValidation),ErrorCatcher(commentServices.ReplyComment.bind(commentServices)))
 CommentRoute.get("/GetPostComments/:PostId/:limit",Authenticate,SchemaValidator(GetComments),ErrorCatcher(commentServices.GetPostComments.bind(commentServices)))
+CommentRoute.delete("/DeleteComment/:PostID/:CommentID",Authenticate,SchemaValidator(DeleteComment),ErrorCatcher(commentServices.DeleteComment.bind(commentServices)))
 export default CommentRoute

@@ -2,6 +2,7 @@ import mongoose, { HydratedDocument } from "mongoose";
 import { IPost } from "../../../Utils/Common/Interfaces";
 import { Abstractrepo } from "../../AbstractRepo";
 import PostModel from "./Post.Model";
+import { AppError } from "../../../Utils/Error";
 
 
 export class PostRepo extends Abstractrepo<IPost>
@@ -18,7 +19,7 @@ export class PostRepo extends Abstractrepo<IPost>
     const Document =  await PostModel.find({}).skip(Skip).limit(limit).setOptions({UserID:UserID})
     if(Document.length == 0 )
     {
-        return null 
+        return [] 
     }
     else 
     {
@@ -38,4 +39,27 @@ export class PostRepo extends Abstractrepo<IPost>
         return Getonepost
     }
    }
+
+   async DeletePost(UserID:mongoose.Types.ObjectId,PostID:mongoose.Types.ObjectId):Promise<boolean>
+   {
+     const PostExist = await PostModel.findById(PostID)
+     if(!PostExist)
+     {
+        throw AppError.NotFound("No post found")
+     }
+     if(!PostExist.CreatorID.equals(UserID))
+     {
+     throw AppError.Unauthorized("You are not the Owner of the post")
+     }
+     const DeleteResult = await PostModel.deleteOne({_id:PostID})
+     if(DeleteResult.deletedCount > 0)
+     {
+        return true
+     }
+     else 
+     {
+        return false
+     }
+   }
+   
 }

@@ -77,13 +77,12 @@ async GetPosts(req: Request, res: Response) {
     throw AppError.Unauthorized("Invalid input");
   }
   const posts = await this.postRepo.GetPost(User._id, limitNum, pageNum);
-  if (!posts) 
-    {
-    throw AppError.NotFound("No post found");
+  if (posts?.length == 0) 
+  {
+   res.status(200).json({Data: [],status: "success",});
   }
   res.status(200).json({Data: posts,status: "success",});
 }
-
 
  async GetSpecificPost(req: Request, res: Response)
  {
@@ -99,6 +98,20 @@ async GetPosts(req: Request, res: Response) {
    res.json({Data:Post ,status: "success"})
  }
 
+ async DeleteApost(req: Request, res: Response)
+ {
+  const User = req.User
+  const {PostID} = req.params
+  const DeleteResult = await this.postRepo.DeletePost(User._id!,PostID as unknown as mongoose.Types.ObjectId)
+  if(DeleteResult)
+  {
+    res.json({message:"Deleted succsessfully"})
+  }
+  else 
+  {
+    throw new AppError("Server Error Deleteing post",500)
+  }
+ }
 
 }
 export default PostServices 

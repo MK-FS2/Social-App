@@ -105,11 +105,30 @@ async GetPostComments(req:Request,res:Response)
     }
 }
  
-async GetReplies(req:Request,res:Response)
-{
-const {CommentID} = req.params
-const User = req.User
-const Replies = await this.commentRepo
+async DeleteComment(req: Request, res: Response) {
+  const user = req.User;
+  const { PostID, CommentID } = req.params;
+
+
+  const comment = await this.commentRepo.FindOneDocument({ _id: CommentID });
+  if (!comment) 
+    {
+    throw AppError.NotFound("No comment found");
+  }
+
+  if (!comment.UserID.equals(user._id)) {
+    throw AppError.Unauthorized("Only the creator can delete this comment");
+  }
+
+
+  const isDeleted = await this.commentRepo.deleteDocument({ _id: CommentID, PostID });
+
+  if (!isDeleted) {
+    throw new AppError("Error deleting comment",500);
+  }
+
+  // 4️⃣ Send success response
+  res.json({ message: "Deleted successfully" });
 }
 
 
