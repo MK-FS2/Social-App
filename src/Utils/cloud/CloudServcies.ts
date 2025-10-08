@@ -54,13 +54,14 @@ export async function DeleteOne(public_id: string): Promise<boolean> {
 }
 
 export async function DeleteFolder(folder: string): Promise<boolean> {
-  try
- {
-    await cloudinary.api.delete_resources_by_prefix(folder, { resource_type: "image" });
-    return true;
-  } 
-  catch (err) 
+  try 
   {
+    await cloudinary.api.delete_resources_by_prefix(folder, { resource_type: "image" });
+    
+    await cloudinary.api.delete_folder(folder);
+
+    return true;
+  } catch (err) {
     console.error("Cloudinary folder delete failed:", err);
     return false;
   }

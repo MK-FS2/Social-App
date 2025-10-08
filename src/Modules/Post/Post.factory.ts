@@ -16,6 +16,10 @@ export  class PostFactory
     post.Header = Data.Header
     return post
    }
+  
+   EditPost()
+   {
 
+   }
 
 }

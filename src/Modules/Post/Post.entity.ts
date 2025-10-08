@@ -11,3 +11,11 @@ export class CreatePostEntity
 }
 
 
+export class EditPostEntity
+{
+ Content?:string
+ Attachments?:fileformat[]
+ Header?:string
+}
+
+

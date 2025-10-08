@@ -52,7 +52,7 @@ export interface IPost
 {
 CreatorID:mongoose.Types.ObjectId,
 Header:string
-Content:string,
+Content:string
 Reactions?:IReaction[]
 Attachments?:fileformat[]
 }
