@@ -1,6 +1,6 @@
 import { PostRepo } from './../../DB/Models/Posts/Post.Repo';
 import {  Request, Response } from 'express';
-import { CreatePostDTO } from './Post.DTO';
+import { CreatePostDTO, EditPostDTO } from './Post.DTO';
 import { PostFactory } from './Post.factory';
 import { DeleteFolder, UploadMany } from '../../Utils/cloud/CloudServcies';
 import { IFile } from '../../Utils/Common/Interfaces';
@@ -8,7 +8,7 @@ import { fileformat } from '../../Utils/Common/types';
 import { AppError } from '../../Utils/Error';
 import { ToggleReaction } from '../../Providers/Reactions/Reaction.provider';
 import mongoose from 'mongoose';
-import { nanoid } from 'nanoid';
+
 
 
 class PostServices 
@@ -33,7 +33,7 @@ async CreatePost(req:Request,res:Response)
         throw  AppError.ServerError()
     }
 
-     if(files)
+     if(files.length > 0)
     {
     const Files_Paths = files.map((file: IFile) =>
     {
@@ -141,11 +141,16 @@ async GetPosts(req: Request, res: Response) {
   }
  }
 
- async UpdatePost(req: Request, res: Response)
+ async EditPost(req: Request, res: Response)
  {
   const User = req.User
   const {PostID} = req.params
-  
+  const Files = req.files as Express.Multer.File[];
+  const editPostDTO:EditPostDTO = req.body
+
+  let Attachments:fileformat[] | null | [] = []
+
+
   const PostExist = await this.postRepo.FindOneDocument({_id:PostID})
   if(!PostExist)
   {
@@ -154,11 +159,37 @@ async GetPosts(req: Request, res: Response) {
   
   if(!User._id.equals(PostExist.CreatorID))
   {
-    throw AppError.Unauthorized("Only the owner can update")
+    throw AppError.Unauthorized("Only the owner can Edit the post")
   }
 
+  if(Files)
+  {
+if(Files.length > 0)
+  {
 
-
+   const AttachmentsPaths = Files.map(file => file.path)
+    
+   const Deleteresult = await DeleteFolder(`social/users/${User._id}/photos/posts/${PostExist._id}`)
+   if(!Deleteresult)
+   {
+    throw AppError.ServerError()
+   }
+    Attachments = await  UploadMany(AttachmentsPaths,`social/users/${User._id}/photos/posts/${PostExist._id}`)
+    if(!Attachments)
+    {
+      throw AppError.ServerError()
+    }
+  }
+  }
+  
+  const post = this.PostFactory.EditPost(editPostDTO,Attachments)
+ 
+  const UpdateResult = await this.postRepo.updateDocument({_id:PostExist._id,CreatorID:User._id},post)
+ if(!UpdateResult)
+ {
+  throw AppError.ServerError()
+ }
+ res.status(201).json({message:"Updated Succsessfully"})
  }
 
 }
