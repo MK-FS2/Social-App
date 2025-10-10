@@ -27,12 +27,12 @@ export class PostRepo extends Abstractrepo<IPost>
     }
    }
 
-   async GetSpecificPost(UserID:mongoose.Types.ObjectId,PostID:mongoose.Types.ObjectId):Promise<HydratedDocument<IPost>|null>
+   async GetSpecificPost(UserID:mongoose.Types.ObjectId,PostID:mongoose.Types.ObjectId):Promise<HydratedDocument<IPost>|[]>
    {
     const Getonepost = await PostModel.findOne({_id:PostID}).setOptions({UserID:UserID})
     if(!Getonepost)
     {
-        return null
+        return []
     }
     else 
     {

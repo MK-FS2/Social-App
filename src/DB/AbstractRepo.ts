@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, RootFilterQuery, ProjectionType, QueryOptions,UpdateQuery ,HydratedDocument } from "mongoose";
+import mongoose, { Model, RootFilterQuery, ProjectionType, QueryOptions,UpdateQuery ,HydratedDocument } from "mongoose";
 import { AppError } from "../Utils/Error";
 
 export abstract class Abstractrepo<Tdoc> {

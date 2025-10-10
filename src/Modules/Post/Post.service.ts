@@ -101,7 +101,7 @@ async GetPosts(req: Request, res: Response) {
 
    if(!Post)
    {
-    throw AppError.NotFound("No post found")
+   return []
    }
 
    res.json({Data:Post ,status: "success"})

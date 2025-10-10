@@ -11,6 +11,6 @@ const commentServices = new commentServicesices()
 CommentRoute.post("/AddComment/:PostID",Authenticate,SchemaValidator(createCommentValidation),ErrorCatcher(commentServices.CreateComment.bind(commentServices)))
 CommentRoute.post("/ToggleReactioncomment/:PostID/:commentID",Authenticate,ErrorCatcher(commentServices.ToggleReactionc.bind(commentServices)))
 CommentRoute.post("/ReplyTocomment/:PostID/:CommentID",Authenticate,SchemaValidator(createCommentValidation),ErrorCatcher(commentServices.ReplyComment.bind(commentServices)))
-CommentRoute.get("/GetPostComments/:PostId/:limit",Authenticate,SchemaValidator(GetComments),ErrorCatcher(commentServices.GetPostComments.bind(commentServices)))
+CommentRoute.get("/GetPostComments/:PostID/:limit",Authenticate,SchemaValidator(GetComments),ErrorCatcher(commentServices.GetPostComments.bind(commentServices)))
 CommentRoute.delete("/DeleteComment/:PostID/:CommentID",Authenticate,SchemaValidator(DeleteComment),ErrorCatcher(commentServices.DeleteComment.bind(commentServices)))
 export default CommentRoute

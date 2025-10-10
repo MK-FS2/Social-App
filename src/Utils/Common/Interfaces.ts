@@ -2,7 +2,8 @@ import mongoose, { ObjectId } from "mongoose";
 import { Reactions, userAgent, UserTypes } from "./enums";
 import { fileformat } from "./types";
 
-export interface IUser {
+export interface IUser 
+{
     Fullname:string,
     Email:string,
     UserType:UserTypes,
@@ -58,6 +59,14 @@ Attachments?:fileformat[]
 }
 
 
+export interface IMessage 
+{
+  content: string;
+  senderID:mongoose.Types.ObjectId; 
+  Attachment?:fileformat
+}
+
+
 export interface IComment 
 {
   PostID: mongoose.Types.ObjectId;           
@@ -65,4 +74,13 @@ export interface IComment
   CommentContent: string;     
   ParentID?: mongoose.Types.ObjectId                 
   Reactions?: IReaction[];   
+}
+
+
+export interface IConversation 
+{
+  CreatorID:mongoose.Types.ObjectId
+  ReceiverID:mongoose.Types.ObjectId
+  dialog?:IMessage[]
+  latestActivity?:Date
 }

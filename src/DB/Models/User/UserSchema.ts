@@ -113,7 +113,7 @@ export const UserSchema = new mongoose.Schema<IUser>(
     enum: UserTypes,
     required: true,
     default: UserTypes.User
-  },
+  }
 },
 {
   timestamps: true,

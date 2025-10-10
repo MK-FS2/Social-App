@@ -1,5 +1,5 @@
 import { z ,ZodType } from "zod";
-import { CreateCommentDTO, GetCommentDTO } from "./Comment.DTO";
+import { CreateCommentDTO} from "./Comment.DTO";
 
 const ObjectIDRej=/^[0-9a-fA-F]{24}$/
 
@@ -9,7 +9,7 @@ PostID:z.string().regex(ObjectIDRej, "Invalid ObjectId")
 })
 
 export const GetComments = z.object({
-  PostId: z.string().regex(ObjectIDRej, "Invalid PostId"),
+  PostID: z.string().regex(ObjectIDRej, "Invalid PostId"),
   limit: z.string().regex(/^\d+$/, "Limit must be a number").transform(Number).refine((val) => val >= 5 && val <= 20, {message: "Limit must be between 5 and 20",}),
 });
 

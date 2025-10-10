@@ -91,10 +91,17 @@ async ReplyComment(req:Request,res:Response)
 
 async GetPostComments(req:Request,res:Response)
 {
-    let {PostId,limit} = req.params
+    let {PostID,limit} = req.params
     const User = req.User
 
-    const Comments = await this.commentRepo.GetComments(User._id,PostId as unknown as mongoose.Types.ObjectId,limit as unknown as number)
+    const PostExist = await this.postRepo.FindOneDocument({_id:PostID})
+    if(!PostExist)
+    {
+      throw AppError.NotFound("No post Found")
+    }
+
+
+    const Comments = await this.commentRepo.GetComments(User._id,PostID as unknown as mongoose.Types.ObjectId,limit as unknown as number)
     if(Comments.length == 0)
     {
         res.json({Data:[]})
@@ -108,6 +115,12 @@ async GetPostComments(req:Request,res:Response)
 async DeleteComment(req: Request, res: Response) {
   const user = req.User;
   const { PostID, CommentID } = req.params;
+
+    const PostExist = await this.postRepo.FindOneDocument({_id:PostID})
+    if(!PostExist)
+    {
+      throw AppError.NotFound("No post Found")
+    }
 
 
   const comment = await this.commentRepo.FindOneDocument({ _id: CommentID });
@@ -127,10 +140,8 @@ async DeleteComment(req: Request, res: Response) {
     throw new AppError("Error deleting comment",500);
   }
 
-  // 4️⃣ Send success response
   res.json({ message: "Deleted successfully" });
 }
-
 
 }
 
