@@ -1,6 +1,18 @@
-import mongoose, { ObjectId } from "mongoose";
-import { Reactions, userAgent, UserTypes } from "./enums";
+import mongoose from "mongoose";
+import { Reactions, RequestStatuses, userAgent, UserTypes } from "./enums";
 import { fileformat } from "./types";
+
+
+
+
+
+
+export interface IFrindRequest 
+{
+  From:mongoose.Types.ObjectId,
+  SentAt:Date
+}
+
 
 export interface IUser 
 {
@@ -17,7 +29,11 @@ export interface IUser
     Password:string,
     ExpireAt?:Date
     PasswordResetCode?:string,
-    PasswordResetExpire?:Date
+    PasswordResetExpire?:Date,
+    FrindList?:mongoose.Types.ObjectId[],
+    BlockedList?:mongoose.Types.ObjectId[]
+    PendingFrindingRequests?:IFrindRequest[],
+    SentRequests?:ISentRequests[]
 }
 
 
@@ -83,4 +99,11 @@ export interface IConversation
   ReceiverID:mongoose.Types.ObjectId
   dialog?:IMessage[]
   latestActivity?:Date
+}
+
+export interface ISentRequests 
+{
+ To:mongoose.Types.ObjectId 
+ SentAt:Date
+ ReqestStatus:RequestStatuses
 }

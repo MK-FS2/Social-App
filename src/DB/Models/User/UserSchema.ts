@@ -6,8 +6,8 @@ import { SendMail } from "../../../Utils/mail";
 import { nanoid } from "nanoid";
 import CryptoJS from "crypto-js";
 import { AppError } from "../../../Utils/Error";
-import { number } from "zod";
 import FileSchema from "../Common/File/File.Schema";
+import { FrindRequest, SentRequest } from "../Common/User/User.CommonSchemas";
 
 
 export type UserDocument = HydratedDocument<IUser>;
@@ -113,7 +113,11 @@ export const UserSchema = new mongoose.Schema<IUser>(
     enum: UserTypes,
     required: true,
     default: UserTypes.User
-  }
+  },
+  FrindList:[mongoose.Schema.Types.ObjectId],
+  BlockedList:[mongoose.Schema.Types.ObjectId],
+  PendingFrindingRequests:[FrindRequest],
+  SentRequests:[SentRequest]
 },
 {
   timestamps: true,

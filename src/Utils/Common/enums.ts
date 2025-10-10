@@ -26,3 +26,11 @@ export enum ReactioningCodes {
   Change = "Updated",
   Delete = "Deleted"
 }
+
+
+export enum RequestStatuses 
+{
+    Pending,
+    Accepted,
+    Rejected
+}
