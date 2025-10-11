@@ -19,10 +19,9 @@ async function Authenticate(req: Request, res: Response, next: NextFunction) {
     if (!Token) {
       throw AppError.Unauthorized("Invalid or expired token");
     }
-
     const userExist = await userRepo.FindOneDocument({ _id: Token.id });
     if (!userExist) {
-      throw AppError.NotFound("User not found");
+      throw AppError.NotFound("User not found n");
     }
 
     const isDeprecated = await tokenRepo.CheckDeprecatedAccessToken(Raw_Token as string, Token.id);

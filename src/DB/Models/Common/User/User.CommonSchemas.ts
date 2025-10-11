@@ -13,9 +13,10 @@ From:
 SentAt:
 {
 type:Date,
-required:true
+required:true,
+default: new Date(Date.now())
 }
-},{_id:false})
+})
 
 
 export const SentRequest = new mongoose.Schema(
@@ -30,6 +31,7 @@ SentAt:
 {
 type:Date,
 required:true,
+default: new Date(Date.now())
 },
 ReqestStatus:
 {
@@ -37,4 +39,4 @@ ReqestStatus:
     enum:RequestStatuses,
     default:RequestStatuses.Pending
 }
-},{_id:false})
+})

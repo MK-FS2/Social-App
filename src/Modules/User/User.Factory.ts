@@ -10,7 +10,6 @@ export class UserFactory
     const Request = new RequstEntity()
 
      Request.From = From 
-     Request.SentAT = new Date(Date.now())
      return Request
     }
 
@@ -18,7 +17,6 @@ export class UserFactory
     {
         const sentRequest = new SentRequestEntity()
         sentRequest.To = To
-        sentRequest.SentAT = new Date(Date.now())
         return sentRequest 
     }
 }
