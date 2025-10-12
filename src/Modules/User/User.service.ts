@@ -240,5 +240,88 @@ async UnBlock(req:Request,res:Response)
   res.json({message:"User Unblocked"})
 }
 
+async GetPendingRequests(req: Request, res: Response) 
+{
+  const User = req.User;
+  const List = await this.userRepo.FindOneDocument({ _id: User._id },{ PendingFrindingRequests: 1 },
+  {
+    populate: 
+    {
+      path: "PendingFrindingRequests.From",
+      select: "Fullname Email ProfilePicture.URL"
+    }
+  }
+);
+  if (!List) 
+  {
+    return res.json({ Data: [] });
+  }
+  const Cleaned = List.PendingFrindingRequests;
+  res.json({ Data: Cleaned });
+}
 
+async GetSentRequests(req:Request,res:Response)
+{
+  const User = req.User
+  const List = await this.userRepo.FindOneDocument({ _id: User._id },{ SentRequests: 1 },
+  {
+    populate: 
+    {
+      path: "SentRequests.To",
+      select: "Fullname Email ProfilePicture.URL"
+    }
+  }
+ );
+  if(!List)
+  {
+    res.json({Data:[]})
+  }
+  else 
+  {
+    const Cleaned  = List.SentRequests
+   res.json({Data:Cleaned})
+  }
+}
+
+async RemoveAnsweredRequest(req: Request, res: Response)
+{
+  const User = req.User
+  const { RequestID } = req.params
+
+  const ListExist = await this.userRepo.FindOneDocument(
+  { _id: User._id, "SentRequests._id": RequestID },
+  { SentRequests: 1 }
+  )
+
+  if(!ListExist)
+  {
+    throw AppError.Unauthorized("Invalid ID")
+  }
+
+  const Target = ListExist.SentRequests?.find((r:any)=>r._id.equals(RequestID))
+
+  if(!Target)
+  {
+    throw AppError.NotFound("Request not found")
+  }
+
+  if(Target.ReqestStatus == 0)
+  {
+    throw new AppError("Request isn't answered yet",401)
+  }
+
+  const Remove = await this.userRepo.updateDocument(
+  { _id: User._id },
+  { $pull: { SentRequests: { _id: new mongoose.Types.ObjectId(RequestID) } } }
+  )
+
+  if(!Remove)
+  {
+    throw AppError.ServerError()
+  }
+  else
+  {
+    res.json({ message: "Request Removed" })
+  }
+}
 }

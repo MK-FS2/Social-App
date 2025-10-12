@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { z ,ZodType } from "zod";
+import { z } from "zod";
 
 
 export const SendFrindRequestValidation = z.object({
@@ -19,6 +19,12 @@ export const AnswerRequest = z.object({
 
 export const BlockUserValidation = z.object({
   BadUserID: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
+});
+
+export const RemoveSentListValidation = z.object({
+ RequestID: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
     message: "Invalid ObjectId",
   }),
 });
