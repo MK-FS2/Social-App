@@ -24,10 +24,27 @@ async StartConversation(req: Request, res: Response) {
 
   const userId = new mongoose.Types.ObjectId(User._id);
   const receiverId = new mongoose.Types.ObjectId(To);
-
-  const userExist = await this.userRepo.IsExist({ _id: receiverId });
-  if (!userExist) {
+  const CurrentUser = await this.userRepo.FindOneDocument({ _id: receiverId },{BlockedList:1});
+  const userExist = await this.userRepo.FindOneDocument({ _id: receiverId },{BlockedList:1});
+  
+  if (!userExist) 
+  {
     throw AppError.NotFound("User doesn't exist");
+  }
+
+  if(!CurrentUser)
+  {
+    throw AppError.ServerError()
+  }
+
+  if(userExist.BlockedList?.some((baduser)=>(baduser.equals(User._id))))
+  {
+    throw AppError.Unauthorized("You are Blocked")
+  }
+
+  if(CurrentUser.BlockedList?.some((baduser)=>(baduser.equals(receiverId))))
+  {
+    throw AppError.Unauthorized("You cant start conversation with a blocked User")
   }
 
   const conversationExist = await this.conversationRepo.FindOneDocument({
@@ -37,7 +54,8 @@ async StartConversation(req: Request, res: Response) {
     ],
   });
 
-  if (conversationExist) {
+  if (conversationExist) 
+    {
     return res.json({ Data: conversationExist._id });
   }
 

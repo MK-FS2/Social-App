@@ -1,3 +1,4 @@
+import { ConversationRepo } from './../../DB/Models/Conversation/Conversation.Repo';
 import {  Request, Response } from 'express';
 import { UserRepo } from '../../DB/Models/User/UserRepo';
 import { AppError } from '../../Utils/Error';
@@ -9,7 +10,7 @@ export class Userservices
 {
 private readonly userRepo = new UserRepo()
 private readonly userFactory = new UserFactory()
-
+private readonly conversationRepo = new ConversationRepo()
 
 async SendFrindRequest(req: Request,res: Response)
 {
@@ -113,4 +114,131 @@ async AnswerFrindRequest(req: Request,res: Response)
 
   res.json({message:"Request Answered"})
 }
+
+
+async BlockingUser(req:Request,res:Response)
+{
+const User = req.User
+const {BadUserID} = req.params
+const UserExist = await this.userRepo.IsExist({_id:BadUserID})
+
+
+if(User._id.equals(BadUserID))
+{
+ throw AppError.Unauthorized("You cant block your self")
+}
+
+
+const CurentUser = await this.userRepo.FindOneDocument({_id:User._id},{BlockedList:1,FrindList:1})
+
+
+if(!CurentUser)
+{
+  // that will never happen any ways 
+  throw AppError.ServerError()
+}
+ 
+if(CurentUser.BlockedList?.some(id => id.equals(BadUserID)))
+{
+  throw new AppError("User is already blocked",400)
+}
+
+
+if(CurentUser.FrindList?.some(id => id.equals(BadUserID)))
+{
+  throw new AppError("You cannot block a friend",400)
+}
+
+if(!UserExist)
+{
+  throw AppError.NotFound("No User Found")
+}
+
+const BlokedUserID = new mongoose.Types.ObjectId(BadUserID)
+const BlokingResult = await this.userRepo.updateDocument({_id:User._id},{$addToSet:{BlockedList:BlokedUserID}})
+
+if(!BlokingResult)
+{
+  throw AppError.ServerError()
+}
+// flag 
+const OldConversations = await this.conversationRepo.deleteDocument({$or:[{CreatorID:User._id,ReceiverID:BlokedUserID},{CreatorID:BlokedUserID,ReceiverID:User._id}]})
+
+res.json({message:"User Bloked"})
+}
+
+async UnFrind(req:Request,res:Response)
+{
+const {BadUserID} = req.params
+const User = req.User
+
+if(User._id.equals(BadUserID))
+{
+  throw new AppError("Unauthourised operation",401)
+}
+const UserExist = await this.userRepo.FindOneDocument({_id:BadUserID},{FrindList:1})
+const CurrentUser = await this.userRepo.FindOneDocument({_id:User._id},{FrindList:1})
+
+if(!CurrentUser)
+{
+  throw AppError.ServerError()
+}
+
+if(!UserExist)
+{
+throw AppError.NotFound("No User Found")
+}
+
+if(!UserExist.FrindList?.some((Frind)=>(Frind.equals(User._id))) && !CurrentUser.FrindList?.some((frind)=>(frind.equals(BadUserID))))
+{
+ throw new AppError("You and the user are not frinds",400)
+}
+const BadID = new mongoose.Types.ObjectId(BadUserID)
+const UnfrindResult1 = await this.userRepo.updateDocument({_id:BadID},{$pull:{FrindList:User._id}})
+const UnfrindResult2 = await this.userRepo.updateDocument({_id:User._id},{$pull:{FrindList:BadID}})
+if(!UnfrindResult1 && !UnfrindResult2)
+{
+  throw AppError.ServerError()
+}
+res.json({message:"Unfrinded"})
+}
+
+async UnBlock(req:Request,res:Response)
+{
+  const User = req.User
+  const {BadUserID} = req.params
+
+  if(User._id.equals(BadUserID))
+  {
+    throw AppError.Unauthorized("Invalid operation")
+  }
+
+  const CurrentUser = await this.userRepo.FindOneDocument({_id:User._id},{BlockedList:1})
+  const UserExist = await this.userRepo.FindOneDocument({_id:BadUserID},{BlockedList:1})
+
+  if(!UserExist)
+  {
+    throw AppError.NotFound("No User Found")
+  }
+
+  if(!CurrentUser)
+  {
+    throw AppError.ServerError()
+  }
+
+  if(!CurrentUser.BlockedList?.some((Blocked)=>Blocked.equals(BadUserID)))
+  {
+    throw new AppError("User is not Blocked",401)
+  }
+
+  const UnBlockingResult = await this.userRepo.updateDocument({_id:User._id},{$pull:{BlockedList:BadUserID}})
+  if(!UnBlockingResult)
+  {
+    throw AppError.ServerError()
+  }
+
+  res.json({message:"User Unblocked"})
+}
+
+
 }

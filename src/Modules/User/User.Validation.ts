@@ -15,3 +15,11 @@ export const AnswerRequest = z.object({
   }),
   Flag: z.string().refine((val) => ["0", "1"].includes(val), {message: "Flag must be either '0' (reject) or '1' (accept)",})
 });
+
+
+export const BlockUserValidation = z.object({
+  BadUserID: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
+});
+

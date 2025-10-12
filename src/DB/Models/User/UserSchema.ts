@@ -114,8 +114,8 @@ export const UserSchema = new mongoose.Schema<IUser>(
     required: true,
     default: UserTypes.User
   },
-  FrindList:[mongoose.Schema.Types.ObjectId],
-  BlockedList:[mongoose.Schema.Types.ObjectId],
+  FrindList:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
+  BlockedList:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
   PendingFrindingRequests:[FrindRequest],
   SentRequests:[SentRequest]
 },
