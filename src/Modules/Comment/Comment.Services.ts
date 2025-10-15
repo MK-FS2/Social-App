@@ -192,6 +192,39 @@ async ToggleFreezComment(req: Request, res: Response)
   res.json({message:`Comment ${Outcome}`})
 }
 
+async EditComment(req: Request, res: Response)
+{
+  const User = req.User
+  const {CommentID,PostID} = req.params 
+  const {CommentContent} = req.body
+
+  const PostExist = await this.postRepo.IsExist({_id:PostID})
+
+   if(!PostExist)
+   {
+    throw AppError.NotFound("No post found")
+   }
+
+   const ConmmentExist = await this.commentRepo.FindOneDocument({_id:CommentID},{UserID:1})
+   if(!ConmmentExist)
+   {
+    throw AppError.NotFound("No comment found")
+   }
+   if(!User._id.equals(ConmmentExist.UserID))
+   {
+    throw AppError.Unauthorized("Only the owner can Edit")
+   }
+  
+   const UpdateResult = await this.commentRepo.updateDocument({_id:CommentID},{$set:{CommentContent:CommentContent}})
+   
+   if(!UpdateResult)
+   {
+    throw AppError.ServerError()
+   }
+  res.json({message:"Comment Edited"})
+}
+
+
 }
 
 export default commentServicesices 

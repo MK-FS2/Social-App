@@ -18,3 +18,10 @@ export const DeleteComment = z.object({
   PostID: z.string().regex(ObjectIDRej, "Invalid PostId"),
   CommentID: z.string().regex(ObjectIDRej, "Invalid Comment id"),
 });
+
+
+export const EditCommentValidation = z.object({
+   PostID: z.string().regex(ObjectIDRej, "Invalid PostId"),
+   CommentID: z.string().regex(ObjectIDRej, "Invalid Comment id"),
+   CommentContent:z.string().min(3,"minimum 3 characters").max(200,"maximum of 200 characters")
+})
