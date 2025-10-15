@@ -19,7 +19,7 @@ export const MessageSchema = new mongoose.Schema<IMessage>(
     },
     Attachment:FileSchema
   },
-  { timestamps: true ,_id:false}
+  { timestamps: true }
 );
 
 

@@ -29,3 +29,10 @@ export const RemoveSentListValidation = z.object({
   }),
 });
 
+
+
+export const SpecficConversationValidation = z.object({
+  ConversationID : z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
+});

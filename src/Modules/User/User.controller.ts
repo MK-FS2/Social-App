@@ -2,7 +2,7 @@ import { Userservices } from './User.service';
 import { Router } from "express";
 import { Authenticate } from "../../Middleware/Authentecation";
 import { SchemaValidator } from "../../Middleware/SchemaValidator";
-import { AnswerRequest, BlockUserValidation, RemoveSentListValidation, SendFrindRequestValidation } from "./User.Validation";
+import { AnswerRequest, BlockUserValidation, RemoveSentListValidation, SendFrindRequestValidation, SpecficConversationValidation } from "./User.Validation";
 import { ErrorCatcher } from "../../Middleware/ErrorCacher";
 
 const UserRout  = Router()
@@ -17,4 +17,6 @@ UserRout.post("/UnBlock/:BadUserID",Authenticate,SchemaValidator(BlockUserValida
 UserRout.get("/GetPendingRequests",Authenticate,ErrorCatcher(userservices.GetPendingRequests.bind(userservices)))
 UserRout.get("/sentRequests",Authenticate,ErrorCatcher(userservices.GetSentRequests.bind(userservices)))
 UserRout.delete("/RemoveAnserdRequests/:RequestID",Authenticate,SchemaValidator(RemoveSentListValidation),ErrorCatcher(userservices.RemoveAnsweredRequest.bind(userservices)))
+UserRout.get("/GetAllconversations",Authenticate,ErrorCatcher(userservices.GetAllConversations.bind(userservices)))
+UserRout.get("/GetSpecificConversation/:ConversationID",Authenticate,SchemaValidator(SpecficConversationValidation),ErrorCatcher(userservices.GetSpecificConversation.bind(userservices)))
 export default UserRout

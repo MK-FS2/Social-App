@@ -324,4 +324,49 @@ async RemoveAnsweredRequest(req: Request, res: Response)
     res.json({ message: "Request Removed" })
   }
 }
+
+
+async GetAllConversations(req: Request, res: Response)
+{
+  const User = req.User
+  
+
+  const ConversationList = await this.conversationRepo.FindDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id}]},{dialog:0,latestActivity:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL"}]})
+
+   if(!ConversationList)
+   {
+    res.json({Data:[]})
+   }
+   else 
+   {
+   res.json({Data:ConversationList})
+   }
+}
+
+async GetSpecificConversation(req: Request, res: Response) {
+  const User = req.User;
+  const { ConversationID } = req.params;
+
+  const ConversationExist = await this.conversationRepo.IsExist({ _id: ConversationID });
+  if (!ConversationExist) 
+  {
+    throw AppError.NotFound("No conversation found");
+  }
+
+  
+  const DialogDoc = await this.conversationRepo.FindOneDocument({ _id: ConversationID },{ dialog: 1 },{populate:{path:"dialog.senderID",select:"Fullname Email ProfilePicture.URL"}});
+
+  if (!DialogDoc) 
+    {
+    throw AppError.ServerError();
+  }
+
+  if (!DialogDoc.dialog || DialogDoc.dialog.length === 0)
+   {
+    return res.json({Data:[]});
+  }
+  res.json({ Data:DialogDoc.dialog});
+}
+
+
 }
