@@ -192,5 +192,43 @@ if(Files.length > 0)
  res.status(201).json({message:"Updated Succsessfully"})
  }
 
+ async ToogleFreezPost(req: Request, res: Response)
+ {
+  const User = req.User
+  const {PostID} = req.params
+  let outcome:string =""
+  const PostExist = await this.postRepo.FindOneDocument({_id:PostID},{CreatorID:1 ,freez:1})
+   
+  if(!PostExist)
+  {
+    throw AppError.NotFound("No post found")
+  }
+
+  if(!User._id.equals(PostExist.CreatorID))
+  {
+   throw AppError.Unauthorized("Only the owner can freez")
+  }
+   
+  if(PostExist.freez == false)
+  {
+    const UpdateResult  = await this.postRepo.updateDocument({_id:PostID},{$set:{freez:true}})
+    if(!UpdateResult)
+    {
+      throw AppError.ServerError()
+    }
+    outcome= "Frozeen"
+  }
+  else 
+  {
+    const UpdateResult  = await this.postRepo.updateDocument({_id:PostID},{$set:{freez:false}})
+    if(!UpdateResult)
+    {
+      throw AppError.ServerError()
+    }
+     outcome= "UnFrozeen"
+  }
+  res.json({message:`Post ${outcome}`})
+ }
+
 }
 export default PostServices 

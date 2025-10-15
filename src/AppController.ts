@@ -5,9 +5,12 @@ import AuthRout from "./Modules/Authentication/Auth.controller";
 import PostRout from "./Modules/Post/Post.controller";
 import MessageRoute from "./Modules/Message/Messages.controller";
 import UserRout from "./Modules/User/User.controller";
+import cors from "cors"
+
 
 function Bootstrap(app: exT.Application): void 
 {
+ app.use(cors({ origin: "*" }));
   connectDB()
   app.use(express.json());
   app.use("/Auth", AuthRout);

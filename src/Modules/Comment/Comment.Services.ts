@@ -17,13 +17,17 @@ async CreateComment(req:Request,res:Response)
 {
     const createCommentDTO:CreateCommentDTO = req.body
     const User = req.User
-    // add to zod validation later
     const {PostID} = req.params 
     const PostExist = await this.postRepo.FindOneDocument({_id:PostID})
     if(!PostExist)
     {
      throw AppError.NotFound("No post found")
     }
+    if(PostExist.freez == true)
+    {
+      throw AppError.Unauthorized("The post is frozeen you cant comment")
+    }
+
 
     if(!PostID)
     {
@@ -72,11 +76,16 @@ async ReplyComment(req:Request,res:Response)
      throw AppError.NotFound("No post Found")
     }
     console.log(CommentID)
-    const commentExist = await this.commentRepo.IsExist({_id:CommentID})
+    const commentExist = await this.commentRepo.FindOneDocument({_id:CommentID},{freez:1})
     if(!commentExist)
     {
         throw  AppError.NotFound("No comment Found")
     }
+
+   if(commentExist.freez == true)
+   {
+     throw  AppError.Unauthorized("The comment is frozeen")
+   }
 
     const Reply = this.commentFactory.createReply(Data,PostID as unknown as mongoose.Types.ObjectId,User._id,CommentID as unknown as mongoose.Types.ObjectId)
 
@@ -141,6 +150,46 @@ async DeleteComment(req: Request, res: Response) {
   }
 
   res.json({ message: "Deleted successfully" });
+}
+
+async ToggleFreezComment(req: Request, res: Response)
+{
+  const User = req.User
+  const {PostID,CommentID} = req.params
+  let Outcome:string =""
+
+  const PostExist = await this.postRepo.IsExist({_id:PostID})
+  
+  if(!PostExist)
+  {
+    throw AppError.NotFound("Post dont exist")
+  }
+  const CommentExist = await this.commentRepo.FindOneDocument({_id:CommentID,PostID:PostID,UserID:User._id},{freez:1})
+  if(!CommentExist)
+  {
+    throw AppError.Unauthorized("you are not the owner of the comment")
+  }
+
+
+   if(CommentExist.freez == true)
+   {
+    const UpdateResult = await this.commentRepo.updateDocument({_id:CommentID},{$set:{freez:false}})
+    if(!UpdateResult)
+    {
+      throw AppError.ServerError()
+    }
+    Outcome = "UnFrozeen"
+   }
+   else 
+   {
+     const UpdateResult = await this.commentRepo.updateDocument({_id:CommentID},{$set:{freez:true}})
+    if(!UpdateResult)
+    {
+      throw AppError.ServerError()
+    }
+    Outcome = "Frozeen"
+   }
+  res.json({message:`Comment ${Outcome}`})
 }
 
 }

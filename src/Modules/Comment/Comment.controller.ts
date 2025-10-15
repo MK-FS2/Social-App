@@ -13,4 +13,5 @@ CommentRoute.post("/ToggleReactioncomment/:PostID/:commentID",Authenticate,Error
 CommentRoute.post("/ReplyTocomment/:PostID/:CommentID",Authenticate,SchemaValidator(createCommentValidation),ErrorCatcher(commentServices.ReplyComment.bind(commentServices)))
 CommentRoute.get("/GetPostComments/:PostID/:limit",Authenticate,SchemaValidator(GetComments),ErrorCatcher(commentServices.GetPostComments.bind(commentServices)))
 CommentRoute.delete("/DeleteComment/:PostID/:CommentID",Authenticate,SchemaValidator(DeleteComment),ErrorCatcher(commentServices.DeleteComment.bind(commentServices)))
+CommentRoute.put("/ToggleFreezcomment/:PostID/:CommentID",Authenticate,SchemaValidator(DeleteComment),ErrorCatcher(commentServices.ToggleFreezComment.bind(commentServices)))
 export default CommentRoute

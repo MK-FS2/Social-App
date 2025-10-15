@@ -72,6 +72,7 @@ Header:string
 Content:string
 Reactions?:IReaction[]
 Attachments?:fileformat[]
+freez?:boolean
 }
 
 
@@ -90,6 +91,7 @@ export interface IComment
   CommentContent: string;     
   ParentID?: mongoose.Types.ObjectId                 
   Reactions?: IReaction[];   
+  freez?:boolean
 }
 
 

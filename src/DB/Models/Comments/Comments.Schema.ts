@@ -29,7 +29,11 @@ type:mongoose.Schema.Types.ObjectId,
 required:false,
 ref:"Comment"
 },
-Reactions:[ReactionSchema]
+Reactions:[ReactionSchema],
+freez: {
+  type: Boolean,
+  default: false
+}
 },{timestamps:true,toJSON:{virtuals:true},toObject:{virtuals:true}})
 
 
