@@ -117,7 +117,23 @@ export const UserSchema = new mongoose.Schema<IUser>(
   FrindList:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
   BlockedList:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
   PendingFrindingRequests:[FrindRequest],
-  SentRequests:[SentRequest]
+  SentRequests:[SentRequest],
+ OnlineStatus: 
+ {
+  Status: 
+  {
+    type: Boolean,
+    default: false,
+  },
+  WebID: 
+  {
+    type: String,
+    required: function (this: any) 
+    {
+      return this.Status === true;
+    },
+  },
+}
 },
 {
   timestamps: true,

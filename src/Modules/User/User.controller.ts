@@ -19,4 +19,5 @@ UserRout.get("/sentRequests",Authenticate,ErrorCatcher(userservices.GetSentReque
 UserRout.delete("/RemoveAnserdRequests/:RequestID",Authenticate,SchemaValidator(RemoveSentListValidation),ErrorCatcher(userservices.RemoveAnsweredRequest.bind(userservices)))
 UserRout.get("/GetAllconversations",Authenticate,ErrorCatcher(userservices.GetAllConversations.bind(userservices)))
 UserRout.get("/GetSpecificConversation/:ConversationID",Authenticate,SchemaValidator(SpecficConversationValidation),ErrorCatcher(userservices.GetSpecificConversation.bind(userservices)))
+UserRout.get("/GetAllFrinds",Authenticate,ErrorCatcher(userservices.GetAllFrinds.bind(userservices)))
 export default UserRout

@@ -34,9 +34,14 @@ export interface IUser
     BlockedList?:mongoose.Types.ObjectId[]
     PendingFrindingRequests?:IFrindRequest[],
     SentRequests?:ISentRequests[]
+    OnlineStatus?:IOnline
 }
 
-
+export interface IOnline
+{
+   Status:boolean,
+   WebID:string
+}
 
 export interface IFile {
   fieldname: string;

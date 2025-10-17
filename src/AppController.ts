@@ -10,7 +10,7 @@ import cors from "cors"
 
 function Bootstrap(app: exT.Application): void 
 {
- app.use(cors({ origin: "*" }));
+  app.use(cors({ origin: "*" }));
   connectDB()
   app.use(express.json());
   app.use("/Auth", AuthRout);

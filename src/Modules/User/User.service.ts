@@ -343,7 +343,7 @@ async GetAllConversations(req: Request, res: Response)
    }
 }
 
-async GetSpecificConversation(req: Request, res: Response) {
+async GetSpecificConversation(req: Request, res:Response) {
   const User = req.User;
   const { ConversationID } = req.params;
 
@@ -368,5 +368,20 @@ async GetSpecificConversation(req: Request, res: Response) {
   res.json({ Data:DialogDoc.dialog});
 }
 
+async GetAllFrinds(req: Request, res:Response)
+{
+  const User = req.User
 
+  const List = await this.userRepo.FindOneDocument({ _id: User._id }, { FrindList: 1, }, { populate: { path: "FrindList", select: "Fullname Email ProfilePicture.URL" } });
+
+   if(!List || !List.FrindList || List.FrindList.length == 0)
+   {
+    res.json({Data:[]})
+   }
+   else 
+   {
+
+    res.json({Data:List.FrindList})
+   }
+}
 }

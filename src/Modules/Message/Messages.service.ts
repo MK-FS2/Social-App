@@ -7,10 +7,12 @@ import mongoose from 'mongoose';
 import { UploadOne } from '../../Utils/cloud/CloudServcies';
 import { fileformat } from '../../Utils/Common/types';
 import { ConversationMessageEntity } from './Message.Entity';
+import { io } from '../..';
+
 
 export class MessageServices 
 {
-// to add schadular auto delet if the last active was 1 moth ago delet the conversation
+// to add schadular auto delete if the last active was 1 moth ago delet the conversation
 // ToAdd bolking feture
 constructor(){}
 private readonly conversationRepo = new ConversationRepo()
@@ -117,4 +119,5 @@ if(!AddingResult)
 
   return res.sendStatus(204);
 }
+
 }
