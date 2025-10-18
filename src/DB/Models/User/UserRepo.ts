@@ -32,8 +32,9 @@ async SocketConnect(UserID: mongoose.Types.ObjectId, SocketID: string): Promise<
       );
     }
     return true;
-  } catch (err) {
-    console.log(`WepID allocation error ${err}`);
+  } catch (err) 
+  {
+    console.log(`WepID allocation ${UserID} error ${err}`);
     return false;
   }
 }
