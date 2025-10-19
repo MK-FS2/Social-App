@@ -4,7 +4,8 @@ import { UserRepo } from "../../DB/Models/User/UserRepo";
 import { TokenRepo } from "../../DB/Models/Tokens/TokenRepo";
 import { Socket } from "socket.io";
 
-export const AuthenticateSocket = async (socket: Socket, next: (err?: Error) => void) => {
+export const AuthenticateSocket = async (socket: Socket, next: (err?: Error) => void) => 
+{
   try {
     const token = socket.handshake.auth?.accessToken;
     if (!token) 

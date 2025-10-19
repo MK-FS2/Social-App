@@ -17,3 +17,11 @@ export const AddMessagevalidation = z.object({
   }),
   Content:z.string().min(1,"minimum of 1 cahracter").max(200,"maximum of 200 charcter")
 });
+
+
+
+export const GetCpnversationValidation = z.object({
+  ConversationID: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
+});

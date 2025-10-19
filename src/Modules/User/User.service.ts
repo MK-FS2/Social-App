@@ -325,13 +325,12 @@ async RemoveAnsweredRequest(req: Request, res: Response)
   }
 }
 
-
+// to be moved to message repo
 async GetAllConversations(req: Request, res: Response)
 {
   const User = req.User
-  
 
-  const ConversationList = await this.conversationRepo.FindDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id}]},{dialog:0,latestActivity:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL"}]})
+  const ConversationList = await this.conversationRepo.FindDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id}]},{dialog:0,latestActivity:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL OnlineStatus"}]})
 
    if(!ConversationList)
    {

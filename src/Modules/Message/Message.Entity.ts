@@ -11,9 +11,3 @@ export class ConversationEntity
 }
 
 
-export class ConversationMessageEntity
-{
-content!:String
-Attachment?:fileformat
-senderID!:mongoose.Types.ObjectId
-}

@@ -1,8 +1,8 @@
-import { UserRepo } from './../DB/Models/User/UserRepo';
+import { UserRepo } from '../../DB/Models/User/UserRepo';
 import mongoose, { HydratedDocument } from "mongoose";
 import { Socket } from "socket.io";
-import { AppError } from '../Utils/Error';
-import { IUser } from '../Utils/Common/Interfaces';
+import { AppError } from '../../Utils/Error';
+import { IUser } from '../../Utils/Common/Interfaces';
 
 export class SocketConnection
 {

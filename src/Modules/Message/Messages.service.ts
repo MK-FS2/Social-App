@@ -6,8 +6,8 @@ import { MessageFactory } from './Message.Factory';
 import mongoose from 'mongoose';
 import { UploadOne } from '../../Utils/cloud/CloudServcies';
 import { fileformat } from '../../Utils/Common/types';
-import { ConversationMessageEntity } from './Message.Entity';
-import { io } from '../..';
+
+
 
 
 export class MessageServices 
@@ -70,54 +70,22 @@ async StartConversation(req: Request, res: Response) {
 
   return res.json({ Data: newConversation._id });
 }
-async AddMessageToconversation(req: Request, res: Response) {
-  const { ConversationID } = req.params;
-  const User = req.User;
-  const { Content } = req.body;
-  const File = req.file;
 
-  let Uploaded: fileformat | null = null;
-  let Message: ConversationMessageEntity;
+async GetConversationData(req: Request, res: Response)
+{
+  const User = req.User
+  const {ConversationID} = req.params
 
-  const ConversationExist = await this.conversationRepo.FindOneDocument({ _id: ConversationID });
-  if (!ConversationExist) 
- {
-    throw AppError.NotFound("No conversation found");
-  }
+  const conversation = await this.conversationRepo.FindOneDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id},],_id:ConversationID},{latestActivity:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL OnlineStatus"},{path:"dialog.senderID",select:"Fullname Email ProfilePicture.URL OnlineStatus"}]})
 
-
-  if (!User._id.equals(ConversationExist.CreatorID) &&!User._id.equals(ConversationExist.ReceiverID)) 
+  if(!conversation)
   {
-    throw AppError.Unauthorized("Unauthorized: You are not part of this conversation");
+    res.json({Data:[]})
   }
-
-
-  if (File) 
-  {
-  Uploaded = await UploadOne(File.path, `social/users/${User._id}/photos/Conversation/${ConversationExist._id}`);
-  if (!Uploaded) throw AppError.ServerError();
-  Message = this.messageFactory.CraeteConversationMessage(Content, User._id, Uploaded);
-  } 
   else 
   {
-  Message = this.messageFactory.CraeteConversationMessage(Content, User._id);
+    res.json({Data:conversation})
   }
-
-
- const AddingResult = await this.conversationRepo.updateDocument(
-  { _id: ConversationID },
-  {
-    $push: { dialog: Message },
-    $set: { latestActivity: new Date() },
-  }
-);
-
-if(!AddingResult)
-{
-    throw AppError.ServerError()
-}
-
-  return res.sendStatus(204);
 }
 
 }
