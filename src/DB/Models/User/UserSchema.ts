@@ -118,8 +118,8 @@ export const UserSchema = new mongoose.Schema<IUser>(
   BlockedList:[{type:mongoose.Schema.Types.ObjectId,ref:"User"}],
   PendingFrindingRequests:[FrindRequest],
   SentRequests:[SentRequest],
- OnlineStatus: 
- {
+  OnlineStatus: 
+  {
   Status: 
   {
     type: Boolean,
@@ -139,6 +139,24 @@ export const UserSchema = new mongoose.Schema<IUser>(
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
+});
+
+
+UserSchema.post("findOne", function (doc) 
+{
+  try 
+  {
+    if (!doc || !doc.Phone) return;
+
+    const decrypted = CryptoJS.AES.decrypt(
+      doc.Phone,
+      process.env.secretkey as string
+    ).toString(CryptoJS.enc.Utf8);
+
+    doc.Phone = decrypted;
+  } catch (err) {
+    console.error("Decryption failed:", err);
+  }
 });
 
 UserSchema.pre("save",async function(next)

@@ -13,7 +13,7 @@ import { fileformat } from '../../Utils/Common/types';
 export class MessageServices 
 {
 // to add schadular auto delete if the last active was 1 moth ago delet the conversation
-// ToAdd bolking feture
+// Toadd edit sent message with time limit and message sceen or not / observer fro front end using sockets and glopal lsiner
 constructor(){}
 private readonly conversationRepo = new ConversationRepo()
 private readonly userRepo = new UserRepo()
@@ -76,7 +76,7 @@ async GetConversationData(req: Request, res: Response)
   const User = req.User
   const {ConversationID} = req.params
 
-  const conversation = await this.conversationRepo.FindOneDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id},],_id:ConversationID},{latestActivity:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL OnlineStatus"},{path:"dialog.senderID",select:"Fullname Email ProfilePicture.URL OnlineStatus"}]})
+  const conversation = await this.conversationRepo.FindOneDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id},],_id:ConversationID},{latestActivity:0,dialog:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL OnlineStatus"},{path:"dialog.senderID",select:"Fullname Email ProfilePicture.URL OnlineStatus"}]})
 
   if(!conversation)
   {
@@ -86,6 +86,47 @@ async GetConversationData(req: Request, res: Response)
   {
     res.json({Data:conversation})
   }
+}
+
+async GetAllConversations(req: Request, res: Response)
+{
+  const User = req.User
+
+  const ConversationList = await this.conversationRepo.FindDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id}]},{dialog:0,latestActivity:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL OnlineStatus"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL OnlineStatus"}]})
+
+   if(!ConversationList)
+   {
+    res.json({Data:[]})
+   }
+   else 
+   {
+   res.json({Data:ConversationList})
+   }
+}
+
+async GetSpecificConversation(req: Request, res:Response) {
+  const User = req.User;
+  const { ConversationID } = req.params;
+
+  const ConversationExist = await this.conversationRepo.IsExist({ _id: ConversationID });
+  if (!ConversationExist) 
+  {
+    throw AppError.NotFound("No conversation found");
+  }
+
+  
+  const DialogDoc = await this.conversationRepo.FindOneDocument({ _id: ConversationID },{ dialog: 1 },{populate:{path:"dialog.senderID",select:"Fullname Email ProfilePicture.URL"}});
+
+  if (!DialogDoc) 
+    {
+    throw AppError.ServerError();
+  }
+
+  if (!DialogDoc.dialog || DialogDoc.dialog.length === 0)
+   {
+    return res.json({Data:[]});
+  }
+  res.json({ Data:DialogDoc.dialog});
 }
 
 }

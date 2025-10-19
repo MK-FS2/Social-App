@@ -36,3 +36,11 @@ export const SpecficConversationValidation = z.object({
     message: "Invalid ObjectId",
   }),
 });
+
+
+export const GETprofilePublicValidation = z.object({
+    UserID : z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
+});
+

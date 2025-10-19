@@ -5,6 +5,7 @@ import { AppError } from '../../Utils/Error';
 import { UserFactory } from './User.Factory';
 import mongoose from 'mongoose';
 import { RequestStatuses } from '../../Utils/Common/enums';
+import { ReplaceFile } from '../../Utils/cloud/CloudServcies';
 
 export class Userservices 
 {
@@ -325,48 +326,6 @@ async RemoveAnsweredRequest(req: Request, res: Response)
   }
 }
 
-// to be moved to message repo
-async GetAllConversations(req: Request, res: Response)
-{
-  const User = req.User
-
-  const ConversationList = await this.conversationRepo.FindDocument({$or:[{CreatorID:User._id},{ReceiverID:User._id}]},{dialog:0,latestActivity:0},{populate:[{path:"CreatorID",select:"Fullname Email ProfilePicture.URL"},{path:"ReceiverID",select:"Fullname Email ProfilePicture.URL OnlineStatus"}]})
-
-   if(!ConversationList)
-   {
-    res.json({Data:[]})
-   }
-   else 
-   {
-   res.json({Data:ConversationList})
-   }
-}
-
-async GetSpecificConversation(req: Request, res:Response) {
-  const User = req.User;
-  const { ConversationID } = req.params;
-
-  const ConversationExist = await this.conversationRepo.IsExist({ _id: ConversationID });
-  if (!ConversationExist) 
-  {
-    throw AppError.NotFound("No conversation found");
-  }
-
-  
-  const DialogDoc = await this.conversationRepo.FindOneDocument({ _id: ConversationID },{ dialog: 1 },{populate:{path:"dialog.senderID",select:"Fullname Email ProfilePicture.URL"}});
-
-  if (!DialogDoc) 
-    {
-    throw AppError.ServerError();
-  }
-
-  if (!DialogDoc.dialog || DialogDoc.dialog.length === 0)
-   {
-    return res.json({Data:[]});
-  }
-  res.json({ Data:DialogDoc.dialog});
-}
-
 async GetAllFrinds(req: Request, res:Response)
 {
   const User = req.User
@@ -383,4 +342,80 @@ async GetAllFrinds(req: Request, res:Response)
     res.json({Data:List.FrindList})
    }
 }
+
+async GetProfilePublic(req: Request, res:Response)
+{
+  const CurrentUser = req.User
+  const {UserID} = req.params
+
+  const UserExist = await this.userRepo.FindOneDocument({_id:UserID},{BlockedList:1,Fullname:1,Email:1,"ProfilePicture.URL":1})
+  if(!UserExist)
+  {
+    throw AppError.NotFound("User Dont exist")
+  }
+  if(UserExist.BlockedList?.includes(CurrentUser._id))
+  {
+    throw AppError.Unauthorized("You are Blocked")
+  }
+
+ const userData = UserExist.toObject();
+ delete userData.BlockedList;
+  res.json({Data:userData})
+}
+
+async GetProfilePrivate(req:Request,res:Response)
+{
+  const User = req.User
+
+  const UserExist = await this.userRepo.FindOneDocument({_id:User._id},{Fullname:1,Email:1,Phone:1,ProfilePicture:1})
+   
+  if(!UserExist)
+  {
+    throw AppError.ServerError()
+  }
+ res.json({Data:UserExist})
+}
+
+async UpdateProfileImage(req:Request,res:Response)
+{
+  const User = req.User
+  const {ID} = req.body
+  const File = req.file
+  const UserExist = await this.userRepo.FindOneDocument({_id:User._id},{ProfilePicture:1})
+   
+   if(!File)
+   {
+      throw new AppError("Image requried is requried",400)
+   }
+
+  if(!UserExist)
+  {
+    throw AppError.ServerError()
+  }
+
+  if(!ID)
+  {
+    throw new AppError("ID is requried",400)
+  }
+  if(!UserExist.ProfilePicture.ID !== ID)
+  {
+    throw new AppError("Invalid ID",400)
+  }
+ 
+  const ReplacingResult  = await ReplaceFile(ID,File.path,`social/users/${User._id}/photos/profilepicture`)
+  if(!ReplacingResult)
+  {
+    throw AppError.ServerError()
+  }
+
+ const Update = await this.userRepo.updateDocument({_id:User._id},{$set:{ProfilePicture:ReplacingResult }})
+ if(!Update)
+ {
+  throw AppError.ServerError()
+ }
+
+ res.json({message:"Updated succsessfully"})
+}
+
+
 }
