@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { HydratedDocument } from "mongoose";
 import { IUser } from "./Interfaces";
 

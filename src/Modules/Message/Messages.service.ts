@@ -96,13 +96,34 @@ async GetAllConversations(req: Request, res: Response)
 
    if(!ConversationList)
    {
-    res.json({Data:[]})
+    return res.json({Data:[]})
    }
-   else 
+   
+ const ConversationListPlain = ConversationList.map(doc => doc.toObject() as any);
+
+
+   for(const conversation  of ConversationListPlain)
    {
-   res.json({Data:ConversationList})
+   if(User._id.equals(new mongoose.Types.ObjectId(conversation.CreatorID)))
+   {
+    delete (conversation as any).CreatorID
+    conversation.ChatPartner = conversation.ReceiverID;
    }
+   else if(User._id.equals(new mongoose.Types.ObjectId(conversation.ReceiverID)))
+   {
+     delete (conversation as any).ReceiverID
+     conversation.ChatPartner = conversation.CreatorID;
+   }
+   else
+   {
+    throw AppError.Unauthorized("You are not a part of the conversation")
+   }
+   }
+  
+   res.json({Data:ConversationListPlain})
+   
 }
+
 
 async GetSpecificConversation(req: Request, res:Response) {
   const User = req.User;
