@@ -8,7 +8,7 @@ export const SchemaValidator=(Schema:ZodType) =>
      {
         try 
         {
-        const body = { ...req.body,...req.params,...req.query };
+        const body = { ...req.body,...req.params,...req.query,...req.headers};
         const result = Schema.safeParse(body);
         if (!result.success) 
         {

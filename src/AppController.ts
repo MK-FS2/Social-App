@@ -10,20 +10,23 @@ import cors from "cors"
 
 function Bootstrap(app: exT.Application): void 
 {
-  app.use(cors({ origin: "*",allowedHeaders: ["Content-Type", "Authorization"] }));
-  connectDB()
+  app.use(cors({origin:"*"}));
+  
   app.use(express.json());
+  
+  connectDB()
+  
   app.use("/Auth", AuthRout);
   app.use("/Post",PostRout)
   app.use("/Conversation",MessageRoute)
   app.use("/User",UserRout)
+  
   // Error handler
- app.use((err:IError, req: exT.Request, res: exT.Response, next: exT.NextFunction) => {
+  app.use((err:IError, req: exT.Request, res: exT.Response, next: exT.NextFunction) => {
     const statusCode = err?.statusCode || 500; 
     const message = err?.message || "Something went wrong";
     res.status(statusCode).json({ error: message });
-  }
-);
+  });
 }
 
 export default Bootstrap;

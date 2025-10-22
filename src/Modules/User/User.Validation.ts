@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { z } from "zod";
+import { UpdateUserEntity } from "./User.Entities";
+import { onlyLettersRegex, passwordRegex, phoneRegex } from "../../DB/Models/User/UserRejex";
 
 
 export const SendFrindRequestValidation = z.object({
@@ -44,3 +46,13 @@ export const GETprofilePublicValidation = z.object({
   }),
 });
 
+
+export const UpdateUserValidation = z.object({
+    "refresh-token": z.string().nonempty("Refresh token is required"),
+    FName: z.string().min(2, "First name must be at least 2 characters long").max(10, "First name can't exceed 10 characters").regex(onlyLettersRegex, "Only letters are allowed").optional(),
+    LName: z.string().min(2, "Last name must be at least 2 characters long").max(10, "Last name can't exceed 10 characters").regex(onlyLettersRegex, "Only letters are allowed").optional(),
+    Phone: z.string().regex(phoneRegex, "Invalid phone number").optional(),
+    Password: z.string().regex(passwordRegex, "Password is too weak").optional(),
+  }).refine((data) => Object.values(data).some((v) => v !== undefined), {
+    message: "At least one field must be provided",
+  });

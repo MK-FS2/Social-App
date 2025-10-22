@@ -13,3 +13,12 @@ To!:mongoose.Types.ObjectId
 SentAT!:Date
 ReqestStatus!:RequestStatuses
 }
+
+
+export class UpdateUserEntity 
+{
+  Password?:string
+  FName?:string
+  LName?:string
+  Phone?:string
+}

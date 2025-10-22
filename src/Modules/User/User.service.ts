@@ -1,3 +1,4 @@
+import { TokenRepo } from './../../DB/Models/Tokens/TokenRepo';
 import { ConversationRepo } from './../../DB/Models/Conversation/Conversation.Repo';
 import {  Request, Response } from 'express';
 import { UserRepo } from '../../DB/Models/User/UserRepo';
@@ -6,12 +7,14 @@ import { UserFactory } from './User.Factory';
 import mongoose from 'mongoose';
 import { RequestStatuses } from '../../Utils/Common/enums';
 import { ReplaceFile } from '../../Utils/cloud/CloudServcies';
+import { UpdateUserEntity } from './User.Entities';
 
 export class Userservices 
 {
 private readonly userRepo = new UserRepo()
 private readonly userFactory = new UserFactory()
 private readonly conversationRepo = new ConversationRepo()
+private readonly tokenRepo = new TokenRepo()
 
 async SendFrindRequest(req: Request,res: Response)
 {
@@ -397,9 +400,9 @@ async UpdateProfileImage(req:Request,res:Response)
   {
     throw new AppError("ID is requried",400)
   }
-  if(!UserExist.ProfilePicture.ID !== ID)
+  if (UserExist.ProfilePicture.ID !== ID) 
   {
-    throw new AppError("Invalid ID",400)
+  throw new AppError(`Invalid ID`, 400);
   }
  
   const ReplacingResult  = await ReplaceFile(ID,File.path,`social/users/${User._id}/photos/profilepicture`)
@@ -417,5 +420,32 @@ async UpdateProfileImage(req:Request,res:Response)
  res.json({message:"Updated succsessfully"})
 }
 
+async UpdateUser(req:Request,res:Response)
+{
+  //  expire token and encrypt
+  const User = req.User
+  const Body:UpdateUserEntity = req.body
+   let { authorization } = req.headers;
+   if (!authorization || !authorization.startsWith("Bearer")) 
+   {
+    throw AppError.InvalidInput("Authorization header must start with 'Bearer <token>'");
+   }
+   const Raw_Token = authorization.split(" ")[1];
+   const refreshToken = req.headers["refresh-token"]
 
+
+
+  const NewUser = this.userFactory.UpdateUser(User.Fullname,Body)
+  const UpdateResult =  await this.userRepo.updateDocument({_id:User._id},{$set:NewUser})
+  if(!UpdateResult)
+  {
+    throw AppError.ServerError()
+  }
+  const Blacklistaccestoken = await this.tokenRepo.BlackListToken(Raw_Token as string,refreshToken as string,User._id)
+  if(!Blacklistaccestoken)
+  {
+    throw AppError.ServerError()
+  }
+  res.json({message:"Updated"})
+}
 }

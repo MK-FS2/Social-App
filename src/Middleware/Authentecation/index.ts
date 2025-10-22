@@ -21,7 +21,7 @@ async function Authenticate(req: Request, res: Response, next: NextFunction) {
     }
     const userExist = await userRepo.FindOneDocument({ _id: Token.id });
     if (!userExist) {
-      throw AppError.NotFound("User not found n");
+      throw AppError.NotFound(`User not found n`);
     }
 
     const isDeprecated = await tokenRepo.CheckDeprecatedAccessToken(Raw_Token as string, Token.id);

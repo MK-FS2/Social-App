@@ -3,7 +3,7 @@ import { Userservices } from './User.service';
 import { Router } from "express";
 import { Authenticate } from "../../Middleware/Authentecation";
 import { SchemaValidator } from "../../Middleware/SchemaValidator";
-import { AnswerRequest, BlockUserValidation, GETprofilePublicValidation, RemoveSentListValidation, SendFrindRequestValidation, SpecficConversationValidation } from "./User.Validation";
+import { AnswerRequest, BlockUserValidation, GETprofilePublicValidation, RemoveSentListValidation, SendFrindRequestValidation, SpecficConversationValidation, UpdateUserValidation } from "./User.Validation";
 import { ErrorCatcher } from "../../Middleware/ErrorCacher";
 import FileUpload from '../../Middleware/FileUplode';
 
@@ -23,4 +23,5 @@ UserRout.get("/GetAllFrinds",Authenticate,ErrorCatcher(userservices.GetAllFrinds
 UserRout.get("/GetProfilePublic/:UserID",Authenticate,SchemaValidator(GETprofilePublicValidation),ErrorCatcher(userservices.GetProfilePublic.bind(userservices)),)
 UserRout.get("/GetProfilePrivate",Authenticate,ErrorCatcher(userservices.GetProfilePrivate.bind(userservices)))
 UserRout.put("/UpdateProfileImage",Authenticate,FileUpload(1*1024*1024,FileTypes.Image).single("ProfilePicture"),ErrorCatcher(userservices.UpdateProfileImage.bind(userservices)))
+UserRout.put("/UpdateUserInfo",Authenticate,SchemaValidator(UpdateUserValidation),ErrorCatcher(userservices.UpdateUser.bind(userservices)))
 export default UserRout
