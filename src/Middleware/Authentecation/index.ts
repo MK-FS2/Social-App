@@ -16,10 +16,11 @@ async function Authenticate(req: Request, res: Response, next: NextFunction) {
     const Token = VerifyToken(Raw_Token as string);
     const userRepo = new UserRepo();
     const tokenRepo = new TokenRepo();
-    if (!Token) {
+    if (!Token) 
+      {
       throw AppError.Unauthorized("Invalid or expired token");
     }
-    const userExist = await userRepo.FindOneDocument({ _id: Token.id });
+    const userExist = await userRepo.FindOneDocument({ _id: Token.id },{Password:0,UserAgent:0,IsVerifiyed:0,lastModefication:0});
     if (!userExist) {
       throw AppError.NotFound(`User not found n`);
     }
